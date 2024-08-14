@@ -17,6 +17,8 @@ struct jogador
 void cadastro(jogador jogadores[]);
 void procurarID(jogador jogadores[]);
 void procurarNome(jogador jogadores[]);
+void listarTudo(jogador jogadores[]);
+void listarXY(jogador jogadores[]);
 void procurar(jogador jogadores[]);
 void excluir(jogador jogadores[]);
 void menu(jogador jogadores[]);
@@ -26,20 +28,32 @@ void cadastro(jogador jogadores[]) {
     string nomeTemp, timeTemp;
     char pernaTemp;
 
-    cout << "-- Cadastro --" << endl;
+    cout << "-- Cadastro --" << "\n";
 
     cin.ignore(); 
-    cout << "Nome do jogador:" << endl;
+    cout << "Nome do jogador:" << "\n";
     getline(cin, nomeTemp);
+    while(nomeTemp.empty()){
+        cout << "Nome do jogador:" << "\n";
+        getline(cin, nomeTemp);  
+    }
 
-    cout << "Idade do jogador:" << endl;
+    cout << "Idade do jogador:" << "\n";
     cin >> idadeTemp;
+    while(idadeTemp <= 0){
+        cout << "Idade do jogador:" << "\n";
+       cin >> idadeTemp;  
+    }
 
     cin.ignore(); 
-    cout << "Time atual do jogador:" << endl;
+    cout << "Time atual do jogador:" << "\n";
     getline(cin, timeTemp);
+    while(timeTemp.empty()){
+        cout << "Time do jogador:" << "\n";
+        getline(cin, timeTemp);  
+    }
 
-    cout << "Perna boa do jogador: E | D" << endl;
+    cout << "Perna boa do jogador: E | D" << "\n";
     cin >> pernaTemp;
 
     while (pernaTemp != 'D' && pernaTemp != 'E' && pernaTemp != 'e' && pernaTemp != 'd'){
@@ -59,7 +73,7 @@ void cadastro(jogador jogadores[]) {
         // Adicionar lógica para expandir o vetor
     }
 
-    cout << "Cadastro realizado com sucesso!" << endl;
+    cout << "Cadastro realizado com sucesso!" << "\n";
 }
 
 void procurarID(jogador jogadores[]) {
@@ -69,13 +83,13 @@ void procurarID(jogador jogadores[]) {
     cin >> idProcurado;
 
     if (idProcurado > 0 && idProcurado <= 40 && jogadores[idProcurado - 1].id != -1) {
-        cout << "Jogador de Id: " << idProcurado << endl
-             << "Nome: " << jogadores[idProcurado - 1].nome << endl
-             << "Idade: " << jogadores[idProcurado - 1].idade << endl
-             << "Time atual: " << jogadores[idProcurado - 1].time << endl
-             << "Perna boa: " << jogadores[idProcurado - 1].perna << endl;
+        cout << "Jogador de Id: " << idProcurado << "\n"
+             << "Nome: " << jogadores[idProcurado - 1].nome << "\n"
+             << "Idade: " << jogadores[idProcurado - 1].idade << "\n"
+             << "Time atual: " << jogadores[idProcurado - 1].time << "\n"
+             << "Perna boa: " << jogadores[idProcurado - 1].perna << "\n";
     } else {
-        cout << "Id não encontrado!" << endl;
+        cout << "Id não encontrado!" << "\n";
     }
 }
 
@@ -89,57 +103,71 @@ void procurarNome(jogador jogadores[]) {
 
     for (int i = 0; i < 40; i++) {
         if (jogadores[i].nome == nomeProcurado) {
-            cout << "Jogador encontrado!" << endl
-                 << "Id: " << jogadores[i].id << endl
-                 << "Nome: " << jogadores[i].nome << endl
-                 << "Idade: " << jogadores[i].idade << endl
-                 << "Time atual: " << jogadores[i].time << endl
-                 << "Perna boa: " << jogadores[i].perna << endl;
+            cout << "Jogador encontrado!" << "\n"
+                 << "Id: " << jogadores[i].id << "\n"
+                 << "Nome: " << jogadores[i].nome << "\n"
+                 << "Idade: " << jogadores[i].idade << "\n"
+                 << "Time atual: " << jogadores[i].time << "\n"
+                 << "Perna boa: " << jogadores[i].perna << "\n";
             encontrado = true;
             i = 40;
         }
     }
 
     if (!encontrado) {
-        cout << "Nome não encontrado." << endl;
+        cout << "Nome não encontrado." << "\n";
     }
 }
 
 void procurarIdade(jogador jogadores[]) {
     int idadeProcurada;
 
-    cout << "Digite a idade: " << endl;
+    cout << "Digite a idade: " << "\n";
     cin >> idadeProcurada;
 }
 
 void listarTudo(jogador jogadores[]) {
 
-    cout << "Todos os jogadores cadastrados: " << endl;
+    cout << "Todos os jogadores cadastrados: " << "\n";
     for (int i = 0; i < 40; i++){ 
-        if (jogadores[i].id != -1)
-        {
-            cout << endl << "Jogador " << i + 1 << endl
-            << "Id: " << jogadores[i].id << endl
-            << "Nome: " << jogadores[i].nome << endl
-            << "Idade: " << jogadores[i].idade << endl
-            << "Time: " << jogadores[i].time << endl
-            << "Perna boa: " << jogadores[i].perna << endl;
+        if (jogadores[i].id != -1){
+            cout << "\n" << "Jogador " << i + 1 << "\n"
+            << "Id: " << jogadores[i].id << "\n"
+            << "Nome: " << jogadores[i].nome << "\n"
+            << "Idade: " << jogadores[i].idade << "\n"
+            << "Time: " << jogadores[i].time << "\n"
+            << "Perna boa: " << jogadores[i].perna << "\n";
         }        
     }
 }
 
 void listarXY(jogador jogadores[]){
+    int x, y;
+    cout << "A partir de qual jogador (Id) deseja listar: " << "\n";
+    cin >> x;
+    cout << "\n" << "Até qual jogador (Id) deseja listar: " << "\n";
+    cin >> y;
 
+    for (int i = x - 1; i < y - 1; i++){
+        if(jogadores[i].id != -1){
+            cout << "\n" << "Jogador " << i + 1 << "\n"
+            << "Id: " << jogadores[i].id << "\n"
+            << "Nome: " << jogadores[i].nome << "\n"
+            << "Idade: " << jogadores[i].idade << "\n"
+            << "Time: " << jogadores[i].time << "\n"
+            << "Perna boa: " << jogadores[i].perna << "\n";
+        }
+    }
 }
 
 void procurar(jogador jogadores[]) {
     int num;
-    cout << "--- Procurar ---" << endl
-         << "Id - 1" << endl
-         << "Nome - 2" << endl
-         << "Idade - 3" << endl
-         << "Listar tudo - 4" << endl
-         << "Listar de X a Y - 5" << endl;
+    cout << "--- Procurar ---" << "\n"
+         << "Id - 1" << "\n"
+         << "Nome - 2" << "\n"
+         << "Idade - 3" << "\n"
+         << "Listar tudo - 4" << "\n"
+         << "Listar de X a Y - 5" << "\n";
     cin >> num;
 
     switch (num) {
@@ -167,21 +195,19 @@ void procurar(jogador jogadores[]) {
 void excluir(jogador jogadores[]) {
     int posIdExcluir;
 
-    cout << "Digite o Id do jogador que deseja excluir: " << endl;
+    cout << "Digite o Id do jogador que deseja excluir: " << "\n";
     cin >> posIdExcluir;
 
-    posIdExcluir = posIdExcluir - 1;
+    posIdExcluir = posIdExcluir - 1; // O jogador de id 1 está na posição 0, por isso essa linha
     
-
     if(jogadores[posIdExcluir].id == -1){
-        cout << "Id não cadastrado." << endl;
+        cout << "Id não cadastrado." << "\n";
     }
     else {
-
     jogadores[posIdExcluir].id = -1;
 
     for (int i = posIdExcluir + 1; i < 40; i++){
-        if(jogadores[i].id == -1 or i == 39){
+        if(jogadores[i].id == -1){ // Encontrar a primeira posição vazia do vetor
             int auxN;
             string auxT;
             char auxC;
@@ -207,11 +233,19 @@ void excluir(jogador jogadores[]) {
                 jogadores[j].time = jogadores[j + 1].time;
                 jogadores[j + 1].time = auxT;
             }
-        i = 40; 
+        i = 40;
+        } else if (i == 39){ // Se a última posição for escolhida para exclusão, apenas a marca como vazia
+            jogadores[i].id = -1;
+            i = 40;
         }
     }    
+    for (int a = 0; a < 40; a++){
+        if(jogadores[a].id < -1){
+            jogadores[a].id == -1;
+        }
+    }
     
-    cout << "Jodador excluido com sucesso!" << endl;
+    cout << "Jodador excluido com sucesso!" << "\n";
     }
 }
 
@@ -219,14 +253,14 @@ void menu(jogador jogadores[]) {
     bool run = true;
     while (run) {
         int num;
-        cout << "--- Menu ---" << endl
-             << "Cadastrar - 1" << endl
-             << "Procurar - 2" << endl
-             << "Excluir - 3" << endl
-             << "Salvar no arquivo - 4" << endl
-             << "Sair - 5";
+        cout << "\n" << "--- Menu ---" << "\n"
+             << "Cadastrar - 1" << "\n"
+             << "Procurar - 2" << "\n"
+             << "Excluir - 3" << "\n"
+             << "Salvar no arquivo - 4" << "\n"
+             << "Sair - 5" << "\n";
 
-        cin >> num;
+        cin >> num; 
 
         switch (num) {
             case 1:
@@ -239,13 +273,13 @@ void menu(jogador jogadores[]) {
                 excluir(jogadores);
                 break;
             case 4:
-                
+                cadastro(jogadores);
                 break;
             case 5:
                 run = false;
                 break;
             default:
-                cout << "Opção inválida. Tente novamente." << endl;
+                cout << "Opção inválida. Tente novamente." << "\n";
                 break;
         }
     }
