@@ -1,27 +1,25 @@
 #include <iostream>
 #include <string>
-
 using namespace std;
 
-struct jogador
-{
+struct jogador {
     int id;
     int idade;
-    char perna;  
+    char perna;
     string nome;
     string time;
 };
 
-
 // Declarações das funções
 void cadastro(jogador jogadores[]);
-void procurarID(jogador jogadores[]);
 void procurarNome(jogador jogadores[]);
 void listarTudo(jogador jogadores[]);
 void listarXY(jogador jogadores[]);
 void procurar(jogador jogadores[]);
 void excluir(jogador jogadores[]);
 void menu(jogador jogadores[]);
+bool buscaBinaria(jogador jogadores[], string nomeProcurado, int idadeProcurada);
+void ordenar(jogador jogadores[], bool tipo);
 
 void cadastro(jogador jogadores[]) {
     int idadeTemp;
@@ -30,39 +28,43 @@ void cadastro(jogador jogadores[]) {
 
     cout << "-- Cadastro --" << "\n";
 
-    cin.ignore(); 
+    cin.ignore();
     cout << "Nome do jogador:" << "\n";
     getline(cin, nomeTemp);
-    while(nomeTemp.empty()){
+    while (nomeTemp.empty()) {
         cout << "Nome do jogador:" << "\n";
-        getline(cin, nomeTemp);  
+        getline(cin, nomeTemp);
     }
 
     cout << "Idade do jogador:" << "\n";
     cin >> idadeTemp;
-    while(idadeTemp <= 0){
+    while (idadeTemp <= 0) {
         cout << "Idade do jogador:" << "\n";
-       cin >> idadeTemp;  
+        cin >> idadeTemp;
+
+        if(cin.fail()) {
+        cin.clear(); // Limpa o estado de erro do cin
+        cin.ignore(); // Ignora a entrada inválida
+        }
     }
 
-    cin.ignore(); 
+    cin.ignore();
     cout << "Time atual do jogador:" << "\n";
     getline(cin, timeTemp);
-    while(timeTemp.empty()){
+    while (timeTemp.empty()) {
         cout << "Time do jogador:" << "\n";
-        getline(cin, timeTemp);  
+        getline(cin, timeTemp);
     }
 
     cout << "Perna boa do jogador: E | D" << "\n";
     cin >> pernaTemp;
-
-    while (pernaTemp != 'D' && pernaTemp != 'E' && pernaTemp != 'e' && pernaTemp != 'd'){
+    while (pernaTemp != 'D' && pernaTemp != 'E' && pernaTemp != 'e' && pernaTemp != 'd') {
         cout << "Digite 'D' ou 'E': ";
         cin >> pernaTemp;
     }
 
-    for (int i = 0; i < 40; i++){ 
-        if(jogadores[i].id == -1){
+    for (int i = 0; i < 40; i++) {
+        if (jogadores[i].id == -1) {
             jogadores[i].id = i + 1;
             jogadores[i].nome = nomeTemp;
             jogadores[i].time = timeTemp;
@@ -70,26 +72,77 @@ void cadastro(jogador jogadores[]) {
             jogadores[i].perna = pernaTemp;
             i = 40;
         }
-        // Adicionar lógica para expandir o vetor
     }
 
     cout << "Cadastro realizado com sucesso!" << "\n";
 }
 
-void procurarID(jogador jogadores[]) {
-    int idProcurado;
-
-    cout << "Digite o Id: ";
-    cin >> idProcurado;
-
-    if (idProcurado > 0 && idProcurado <= 40 && jogadores[idProcurado - 1].id != -1) {
-        cout << "Jogador de Id: " << idProcurado << "\n"
-             << "Nome: " << jogadores[idProcurado - 1].nome << "\n"
-             << "Idade: " << jogadores[idProcurado - 1].idade << "\n"
-             << "Time atual: " << jogadores[idProcurado - 1].time << "\n"
-             << "Perna boa: " << jogadores[idProcurado - 1].perna << "\n";
+bool buscaBinaria(jogador jogadores[], string nomeProcurado, int idadeProcurada) {
+    int posIncial = 0, posFinal = 39, meio;
+    if (idadeProcurada < 0) {
+        while (posIncial <= posFinal) {
+            meio = (posIncial + posFinal) / 2;
+            if (nomeProcurado == jogadores[meio].nome) {
+                cout << "Jogador encontrado!" << "\n"
+                     << "Id: " << jogadores[meio].id << "\n"
+                     << "Nome: " << jogadores[meio].nome << "\n"
+                     << "Idade: " << jogadores[meio].idade << "\n"
+                     << "Time atual: " << jogadores[meio].time << "\n"
+                     << "Perna boa: " << jogadores[meio].perna << "\n";
+                return true;
+            } else {
+                if (nomeProcurado > jogadores[meio].nome) {
+                    posIncial = meio + 1;
+                } else {
+                    posFinal = meio - 1;
+                }
+            }
+        }
     } else {
-        cout << "Id não encontrado!" << "\n";
+        while (posIncial <= posFinal) {
+            meio = (posIncial + posFinal) / 2;
+            if (idadeProcurada == jogadores[meio].idade) {
+                cout << "Jogador encontrado!" << "\n"
+                     << "Id: " << jogadores[meio].id << "\n"
+                     << "Nome: " << jogadores[meio].nome << "\n"
+                     << "Idade: " << jogadores[meio].idade << "\n"
+                     << "Time atual: " << jogadores[meio].time << "\n"
+                     << "Perna boa: " << jogadores[meio].perna << "\n";
+                return true;
+            } else {
+                if (idadeProcurada > jogadores[meio].idade) {
+                    posIncial = meio + 1;
+                } else {
+                    posFinal = meio - 1;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void ordenar(jogador jogadores[], bool tipo) {
+    jogador aux;
+    if (tipo) {  // Ordenar por nome
+        for (int i = 0; i < 39; i++) {
+            for (int j = i + 1; j < 40; j++) {
+                if (jogadores[i].nome > jogadores[j].nome) {
+                    aux = jogadores[i];
+                    jogadores[i] = jogadores[j];
+                    jogadores[j] = aux;
+                }
+            }
+        }
+    } else {  // Ordenar por idade
+        for (int i = 0; i < 39; i++) {
+            for (int j = i + 1; j < 40; j++) {
+                if (jogadores[i].idade > jogadores[j].idade) {
+                    aux = jogadores[i];
+                    jogadores[i] = jogadores[j];
+                    jogadores[j] = aux;
+                }
+            }
+        }
     }
 }
 
@@ -98,21 +151,17 @@ void procurarNome(jogador jogadores[]) {
     bool encontrado = false;
 
     cout << "Digite o nome: ";
-    cin.ignore(); 
+    cin.ignore();
     getline(cin, nomeProcurado);
 
+    bool tipo = true;
+    jogador jogadoresOrdenados[40];
     for (int i = 0; i < 40; i++) {
-        if (jogadores[i].nome == nomeProcurado) {
-            cout << "Jogador encontrado!" << "\n"
-                 << "Id: " << jogadores[i].id << "\n"
-                 << "Nome: " << jogadores[i].nome << "\n"
-                 << "Idade: " << jogadores[i].idade << "\n"
-                 << "Time atual: " << jogadores[i].time << "\n"
-                 << "Perna boa: " << jogadores[i].perna << "\n";
-            encontrado = true;
-            i = 40;
-        }
+        jogadoresOrdenados[i] = jogadores[i];
     }
+    ordenar(jogadoresOrdenados, tipo);
+
+    encontrado = buscaBinaria(jogadoresOrdenados, nomeProcurado, -1);
 
     if (!encontrado) {
         cout << "Nome não encontrado." << "\n";
@@ -121,41 +170,57 @@ void procurarNome(jogador jogadores[]) {
 
 void procurarIdade(jogador jogadores[]) {
     int idadeProcurada;
+    bool encontrado = false;
 
     cout << "Digite a idade: " << "\n";
     cin >> idadeProcurada;
-}
 
-void listarTudo(jogador jogadores[]) {
+    bool tipo = false;
+    jogador jogadoresOrdenados[40];
+    for (int i = 0; i < 40; i++) {
+        jogadoresOrdenados[i] = jogadores[i];
+    }
+    ordenar(jogadoresOrdenados, tipo);
 
-    cout << "Todos os jogadores cadastrados: " << "\n";
-    for (int i = 0; i < 40; i++){ 
-        if (jogadores[i].id != -1){
-            cout << "\n" << "Jogador " << i + 1 << "\n"
-            << "Id: " << jogadores[i].id << "\n"
-            << "Nome: " << jogadores[i].nome << "\n"
-            << "Idade: " << jogadores[i].idade << "\n"
-            << "Time: " << jogadores[i].time << "\n"
-            << "Perna boa: " << jogadores[i].perna << "\n";
-        }        
+    encontrado = buscaBinaria(jogadoresOrdenados, "", idadeProcurada);
+
+    if (!encontrado) {
+        cout << "Idade não encontrada." << "\n";
     }
 }
 
-void listarXY(jogador jogadores[]){
+void listarTudo(jogador jogadores[]) {
+    cout << "Todos os jogadores cadastrados: " << "\n";
+    for (int i = 0; i < 40; i++) {
+        if (jogadores[i].id != -1) {
+            cout << "\n"
+                 << "Jogador " << i + 1 << "\n"
+                 << "Id: " << jogadores[i].id << "\n"
+                 << "Nome: " << jogadores[i].nome << "\n"
+                 << "Idade: " << jogadores[i].idade << "\n"
+                 << "Time: " << jogadores[i].time << "\n"
+                 << "Perna boa: " << jogadores[i].perna << "\n";
+        }
+    }
+}
+
+void listarXY(jogador jogadores[]) {
     int x, y;
     cout << "A partir de qual jogador (Id) deseja listar: " << "\n";
     cin >> x;
-    cout << "\n" << "Até qual jogador (Id) deseja listar: " << "\n";
+    cout << "\n"
+         << "Até qual jogador (Id) deseja listar: " << "\n";
     cin >> y;
 
-    for (int i = x - 1; i < y - 1; i++){
-        if(jogadores[i].id != -1){
-            cout << "\n" << "Jogador " << i + 1 << "\n"
-            << "Id: " << jogadores[i].id << "\n"
-            << "Nome: " << jogadores[i].nome << "\n"
-            << "Idade: " << jogadores[i].idade << "\n"
-            << "Time: " << jogadores[i].time << "\n"
-            << "Perna boa: " << jogadores[i].perna << "\n";
+    for (int i = x - 1; i < y; i++) {
+        if (jogadores[i].id != -1) {
+            cout << "\n"
+                 << "Jogador " << i + 1 << "\n"
+                 << "Id: " << jogadores[i].id << "\n"
+                 << "Nome: " << jogadores[i].nome << "\n"
+                 << "Idade: " << jogadores[i].idade << "\n"
+                 << "Time: " << jogadores[i].time << "\n"
+                 << "Perna boa: " << jogadores[i].perna << "\n";
         }
     }
 }
@@ -163,32 +228,27 @@ void listarXY(jogador jogadores[]){
 void procurar(jogador jogadores[]) {
     int num;
     cout << "--- Procurar ---" << "\n"
-         << "Id - 1" << "\n"
-         << "Nome - 2" << "\n"
-         << "Idade - 3" << "\n"
-         << "Listar tudo - 4" << "\n"
-         << "Listar de X a Y - 5" << "\n";
+         << "Nome - 1" << "\n"
+         << "Idade - 2" << "\n"
+         << "Listar tudo - 3" << "\n"
+         << "Listar intervalo" - 4 << "\n";
     cin >> num;
 
     switch (num) {
         case 1:
-            procurarID(jogadores);
-            break;
-        case 2:
             procurarNome(jogadores);
             break;
-        case 3:
+        case 2:
             procurarIdade(jogadores);
             break;
-        case 4:
+        case 3: 
             listarTudo(jogadores);
             break;
-        case 5:
+        case 4: 
             listarXY(jogadores);
             break;
         default:
-            procurar(jogadores);
-            break;
+            cout << "Opção inválida!" << "\n";
     }
 }
 
@@ -198,7 +258,7 @@ void excluir(jogador jogadores[]) {
     cout << "Digite o Id do jogador que deseja excluir: " << "\n";
     cin >> posIdExcluir;
 
-    posIdExcluir = posIdExcluir - 1; // O jogador de id 1 está na posição 0, por isso essa linha
+    posIdExcluir = posIdExcluir - 1;
     
     if(jogadores[posIdExcluir].id == -1){
         cout << "Id não cadastrado." << "\n";
@@ -207,7 +267,7 @@ void excluir(jogador jogadores[]) {
     jogadores[posIdExcluir].id = -1;
 
     for (int i = posIdExcluir + 1; i < 40; i++){
-        if(jogadores[i].id == -1){ // Encontrar a primeira posição vazia do vetor
+        if(jogadores[i].id == -1 or i == 39){
             int auxN;
             string auxT;
             char auxC;
@@ -233,36 +293,25 @@ void excluir(jogador jogadores[]) {
                 jogadores[j].time = jogadores[j + 1].time;
                 jogadores[j + 1].time = auxT;
             }
-        i = 40;
-        } else if (i == 39){ // Se a última posição for escolhida para exclusão, apenas a marca como vazia
-            jogadores[i].id = -1;
-            i = 40;
+        i = 40; 
         }
     }    
-    for (int a = 0; a < 40; a++){
-        if(jogadores[a].id < -1){
-            jogadores[a].id == -1;
-        }
-    }
     
     cout << "Jodador excluido com sucesso!" << "\n";
     }
 }
 
 void menu(jogador jogadores[]) {
-    bool run = true;
-    while (run) {
-        int num;
-        cout << "\n" << "--- Menu ---" << "\n"
-             << "Cadastrar - 1" << "\n"
-             << "Procurar - 2" << "\n"
-             << "Excluir - 3" << "\n"
-             << "Salvar no arquivo - 4" << "\n"
-             << "Sair - 5" << "\n";
+    int opcao;
+    do {
+        cout << "Escolha uma opção:" << "\n"
+             << "1 - Cadastro" << "\n"
+             << "2 - Procurar" << "\n"
+             << "3 - Excluir" << "\n"
+             << "4 - Encerrar" << "\n";
+        cin >> opcao;
 
-        cin >> num; 
-
-        switch (num) {
+        switch (opcao) {
             case 1:
                 cadastro(jogadores);
                 break;
@@ -273,31 +322,19 @@ void menu(jogador jogadores[]) {
                 excluir(jogadores);
                 break;
             case 4:
-                cadastro(jogadores);
-                break;
-            case 5:
-                run = false;
+                cout << "Encerrando..." << "\n";
                 break;
             default:
-                cout << "Opção inválida. Tente novamente." << "\n";
-                break;
+                cout << "Opção inválida, escolha outra." << "\n";
         }
-    }
+    } while (opcao != 4);
 }
 
 int main() {
-
     jogador jogadores[40];
-
     for (int i = 0; i < 40; i++) {
-        jogadores[i].id = -1; // -1 para indicar ID vazio
-        jogadores[i].nome = "";
-        jogadores[i].time = "";
-        jogadores[i].idade = 0;
-        jogadores[i].perna = '\0';
+        jogadores[i].id = -1;
     }
-
     menu(jogadores);
-
     return 0;
 }
