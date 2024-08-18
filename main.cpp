@@ -11,17 +11,18 @@ struct jogador {
 };
 
 // Declarações das funções
-void cadastro(jogador jogadores[]);
-void procurarNome(jogador jogadores[]);
-void listarTudo(jogador jogadores[]);
-void listarXY(jogador jogadores[]);
-void procurar(jogador jogadores[]);
-void excluir(jogador jogadores[]);
-void menu(jogador jogadores[]);
-bool buscaBinaria(jogador jogadores[], string nomeProcurado, int idadeProcurada);
-void ordenar(jogador jogadores[], bool tipo);
+void cadastro(jogador jogadores[], int tamVetor);
+void procurarNome(jogador jogadores[], int tamVetor);
+void listarTudo(jogador jogadores[], int tamVetor);
+void listarXY(jogador jogadores[], int tamVetor);
+void procurar(jogador jogadores[], int tamVetor);
+void excluir(jogador jogadores[], int tamVetor);
+void menu(jogador jogadores[], int tamVetor);
+bool buscaBinaria(jogador jogadores[], int tamVetor, string nomeProcurado, int idadeProcurada);
+void ordenar(jogador jogadores[], int tamVetor, bool tipo);
+void aumentarVetor(jogador*& jogadores, int& tamVetor);
 
-void cadastro(jogador jogadores[]) {
+void cadastro(jogador jogadores[], int tamVetor) {
     int idadeTemp;
     string nomeTemp, timeTemp;
     char pernaTemp;
@@ -63,22 +64,52 @@ void cadastro(jogador jogadores[]) {
         cin >> pernaTemp;
     }
 
-    for (int i = 0; i < 40; i++) {
-        if (jogadores[i].id == -1) {
+    for (int i = 0; i < tamVetor; i++) {
+        if (jogadores[i].id == -1) { // Verifica qual a menor posição vazia
             jogadores[i].id = i + 1;
             jogadores[i].nome = nomeTemp;
             jogadores[i].time = timeTemp;
             jogadores[i].idade = idadeTemp;
             jogadores[i].perna = pernaTemp;
-            i = 40;
-        }
+            i = tamVetor;
+        } 
     }
 
     cout << "Cadastro realizado com sucesso!" << "\n";
 }
 
-bool buscaBinaria(jogador jogadores[], string nomeProcurado, int idadeProcurada) {
-    int posIncial = 0, posFinal = 39, meio;
+void aumentarVetor(jogador*& jogadores, int& tamVetor) {
+    bool aumenta = true;
+    for (int i = 0; i < tamVetor; i++) {
+        if (jogadores[i].id == -1) {
+            aumenta = false;
+            i = tamVetor; // Sair do loop
+        }
+    }
+
+    if (aumenta) {
+        int novoTam = tamVetor + 10;
+        jogador *tempJogadores = new jogador[novoTam];
+
+        for (int i = 0; i < tamVetor; i++) {
+            tempJogadores[i] = jogadores[i];
+        }
+        for (int i = tamVetor; i < novoTam; i++) {
+            tempJogadores[i].id = -1; // Inicializa novos jogadores como vazios
+        }
+
+        delete[] jogadores;
+        jogadores = tempJogadores;
+        tamVetor = novoTam;
+
+        cout << "Capacidade aumentada com sucesso!" << "\n";
+    }
+
+    cadastro(jogadores, tamVetor);
+}
+
+bool buscaBinaria(jogador jogadores[], int tamVetor, string nomeProcurado, int idadeProcurada) {
+    int posIncial = 0, posFinal = tamVetor - 1, meio;
     if (idadeProcurada < 0) {
         while (posIncial <= posFinal) {
             meio = (posIncial + posFinal) / 2;
@@ -121,11 +152,11 @@ bool buscaBinaria(jogador jogadores[], string nomeProcurado, int idadeProcurada)
     return false;
 }
 
-void ordenar(jogador jogadores[], bool tipo) {
+void ordenar(jogador jogadores[], int tamVetor, bool tipo) {
     jogador aux;
     if (tipo) {  // Ordenar por nome
-        for (int i = 0; i < 39; i++) {
-            for (int j = i + 1; j < 40; j++) {
+        for (int i = 0; i < tamVetor - 1; i++) {
+            for (int j = i + 1; j < tamVetor; j++) {
                 if (jogadores[i].nome > jogadores[j].nome) {
                     aux = jogadores[i];
                     jogadores[i] = jogadores[j];
@@ -134,8 +165,8 @@ void ordenar(jogador jogadores[], bool tipo) {
             }
         }
     } else {  // Ordenar por idade
-        for (int i = 0; i < 39; i++) {
-            for (int j = i + 1; j < 40; j++) {
+        for (int i = 0; i < tamVetor - 1; i++) {
+            for (int j = i + 1; j < tamVetor; j++) {
                 if (jogadores[i].idade > jogadores[j].idade) {
                     aux = jogadores[i];
                     jogadores[i] = jogadores[j];
@@ -146,7 +177,7 @@ void ordenar(jogador jogadores[], bool tipo) {
     }
 }
 
-void procurarNome(jogador jogadores[]) {
+void procurarNome(jogador jogadores[], int tamVetor) {
     string nomeProcurado;
     bool encontrado = false;
 
@@ -155,20 +186,20 @@ void procurarNome(jogador jogadores[]) {
     getline(cin, nomeProcurado);
 
     bool tipo = true;
-    jogador jogadoresOrdenados[40];
-    for (int i = 0; i < 40; i++) {
+    jogador jogadoresOrdenados[tamVetor];
+    for (int i = 0; i < tamVetor; i++) {
         jogadoresOrdenados[i] = jogadores[i];
     }
-    ordenar(jogadoresOrdenados, tipo);
+    ordenar(jogadoresOrdenados, tamVetor, tipo);
 
-    encontrado = buscaBinaria(jogadoresOrdenados, nomeProcurado, -1);
+    encontrado = buscaBinaria(jogadoresOrdenados,tamVetor, nomeProcurado, -1);
 
     if (!encontrado) {
         cout << "Nome não encontrado." << "\n";
     }
 }
 
-void procurarIdade(jogador jogadores[]) {
+void procurarIdade(jogador jogadores[], int tamVetor) {
     int idadeProcurada;
     bool encontrado = false;
 
@@ -176,22 +207,22 @@ void procurarIdade(jogador jogadores[]) {
     cin >> idadeProcurada;
 
     bool tipo = false;
-    jogador jogadoresOrdenados[40];
-    for (int i = 0; i < 40; i++) {
+    jogador jogadoresOrdenados[tamVetor];
+    for (int i = 0; i < tamVetor; i++) {
         jogadoresOrdenados[i] = jogadores[i];
     }
-    ordenar(jogadoresOrdenados, tipo);
+    ordenar(jogadoresOrdenados, tamVetor, tipo);
 
-    encontrado = buscaBinaria(jogadoresOrdenados, "", idadeProcurada);
+    encontrado = buscaBinaria(jogadoresOrdenados, tamVetor, "", idadeProcurada);
 
     if (!encontrado) {
         cout << "Idade não encontrada." << "\n";
     }
 }
 
-void listarTudo(jogador jogadores[]) {
+void listarTudo(jogador jogadores[], int tamVetor) {
     cout << "Todos os jogadores cadastrados: " << "\n";
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < tamVetor; i++) {
         if (jogadores[i].id != -1) {
             cout << "\n"
                  << "Jogador " << i + 1 << "\n"
@@ -225,24 +256,24 @@ void listarXY(jogador jogadores[]) {
     }
 }
 
-void procurar(jogador jogadores[]) {
+void procurar(jogador jogadores[], int tamVetor) {
     int num;
     cout << "--- Procurar ---" << "\n"
          << "Nome - 1" << "\n"
          << "Idade - 2" << "\n"
          << "Listar tudo - 3" << "\n"
-         << "Listar intervalo" - 4 << "\n";
+         << "Listar intervalo - 4" << "\n";
     cin >> num;
 
     switch (num) {
         case 1:
-            procurarNome(jogadores);
+            procurarNome(jogadores, tamVetor);
             break;
         case 2:
-            procurarIdade(jogadores);
+            procurarIdade(jogadores, tamVetor);
             break;
         case 3: 
-            listarTudo(jogadores);
+            listarTudo(jogadores, tamVetor);
             break;
         case 4: 
             listarXY(jogadores);
@@ -252,7 +283,7 @@ void procurar(jogador jogadores[]) {
     }
 }
 
-void excluir(jogador jogadores[]) {
+void excluir(jogador jogadores[], int tamVetor) {
     int posIdExcluir;
 
     cout << "Digite o Id do jogador que deseja excluir: " << "\n";
@@ -266,8 +297,8 @@ void excluir(jogador jogadores[]) {
     else {
     jogadores[posIdExcluir].id = -1;
 
-    for (int i = posIdExcluir + 1; i < 40; i++){
-        if(jogadores[i].id == -1 or i == 39){
+    for (int i = posIdExcluir + 1; i < tamVetor; i++){
+        if(jogadores[i].id == -1 or i == tamVetor - 1){
             int auxN;
             string auxT;
             char auxC;
@@ -293,15 +324,15 @@ void excluir(jogador jogadores[]) {
                 jogadores[j].time = jogadores[j + 1].time;
                 jogadores[j + 1].time = auxT;
             }
-        i = 40; 
+        i = tamVetor; 
         }
     }    
     
-    cout << "Jodador excluido com sucesso!" << "\n";
+    cout << "Jogador excluído com sucesso!" << "\n";
     }
 }
 
-void menu(jogador jogadores[]) {
+void menu(jogador jogadores[], int tamVetor) {
     int opcao;
     do {
         cout << "Escolha uma opção:" << "\n"
@@ -313,13 +344,13 @@ void menu(jogador jogadores[]) {
 
         switch (opcao) {
             case 1:
-                cadastro(jogadores);
+                aumentarVetor(jogadores, tamVetor);
                 break;
             case 2:
-                procurar(jogadores);
+                procurar(jogadores, tamVetor);
                 break;
             case 3:
-                excluir(jogadores);
+                excluir(jogadores, tamVetor);
                 break;
             case 4:
                 cout << "Encerrando..." << "\n";
@@ -331,10 +362,16 @@ void menu(jogador jogadores[]) {
 }
 
 int main() {
-    jogador jogadores[40];
-    for (int i = 0; i < 40; i++) {
+    int tamVetor = 2;
+    jogador* jogadores = new jogador[tamVetor];
+    for (int i = 0; i < tamVetor; i++) {
         jogadores[i].id = -1;
+        jogadores[i].idade = -1;
+        jogadores[i].nome = "";
+        jogadores[i].perna = '\0';
+        jogadores[i].time = "";
     }
-    menu(jogadores);
+    menu(jogadores, tamVetor);
+    delete[] jogadores; // Libera a memória alocada para jogadores
     return 0;
 }
